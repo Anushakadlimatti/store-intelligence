@@ -1,0 +1,15 @@
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+.coverage
+htmlcov
+data/*.db
+data/test_*.db
+output
+.git
+.cursor
+*.md
+!README.md
+terminals

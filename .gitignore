@@ -1,0 +1,14 @@
+data/
+output/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
+yolov8n.pt
+*.db
+useful2_extracted.txt
+.venv/
+venv/
+store_1/
+store_2/

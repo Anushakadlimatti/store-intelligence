@@ -1,0 +1,158 @@
+{
+  "stores": [
+    {
+      "store_id": "STORE_1",
+      "name": "Store 1",
+      "layout_image": "store_1/Store 1/Store 1 - layout.png",
+      "open_hours": {
+        "timezone": "Asia/Kolkata",
+        "start": "10:00",
+        "end": "22:00"
+      },
+      "cameras": [
+        {
+          "camera_id": "CAM_ENTRY_01",
+          "role": "entry",
+          "video_path": "store_1/Store 1/CAM 3 - entry.mp4",
+          "zones_covered": ["ENTRANCE"]
+        },
+        {
+          "camera_id": "CAM_ZONE_01",
+          "role": "floor",
+          "video_path": "store_1/Store 1/CAM 1 - zone.mp4",
+          "zones_covered": ["SALM", "TFS", "MINIMALIST", "AQUALOGI", "FOXTALE", "JC", "FRAGRANCE", "NAIL"]
+        },
+        {
+          "camera_id": "CAM_ZONE_02",
+          "role": "floor",
+          "video_path": "store_1/Store 1/CAM 2 - zone.mp4",
+          "zones_covered": ["FACE", "MARS_NYBAE", "MENS", "LOREAL", "BEAUTY", "MAKEUP", "ACCESSORIES"]
+        },
+        {
+          "camera_id": "CAM_BILLING_01",
+          "role": "billing",
+          "video_path": "store_1/Store 1/CAM 5 - billing.mp4",
+          "zones_covered": ["CASH_COUNTER", "BILLING_QUEUE"]
+        }
+      ],
+      "zones": [
+        {"zone_id": "ENTRANCE", "zone_name": "Entrance", "zone_type": "ENTRY", "sku_zone": "ENTRANCE", "is_revenue_zone": false},
+        {"zone_id": "SALM", "zone_name": "Salm Wall", "zone_type": "SHELF", "sku_zone": "SALM", "is_revenue_zone": true},
+        {"zone_id": "TFS", "zone_name": "TFS Wall", "zone_type": "SHELF", "sku_zone": "TFS", "is_revenue_zone": true},
+        {"zone_id": "MINIMALIST", "zone_name": "Minimalist", "zone_type": "SHELF", "sku_zone": "MINIMALIST", "is_revenue_zone": true},
+        {"zone_id": "AQUALOGI", "zone_name": "Aqualogi", "zone_type": "SHELF", "sku_zone": "AQUALOGI", "is_revenue_zone": true},
+        {"zone_id": "FOXTALE", "zone_name": "Foxtale", "zone_type": "SHELF", "sku_zone": "FOXTALE", "is_revenue_zone": true},
+        {"zone_id": "JC", "zone_name": "JC", "zone_type": "SHELF", "sku_zone": "JC", "is_revenue_zone": true},
+        {"zone_id": "FRAGRANCE", "zone_name": "Fragrance Gondola", "zone_type": "DISPLAY", "sku_zone": "FRAGRANCE", "is_revenue_zone": true},
+        {"zone_id": "NAIL", "zone_name": "Nail Unit", "zone_type": "DISPLAY", "sku_zone": "NAIL", "is_revenue_zone": true},
+        {"zone_id": "FACE", "zone_name": "Faces Canada", "zone_type": "SHELF", "sku_zone": "FACE", "is_revenue_zone": true},
+        {"zone_id": "MARS_NYBAE", "zone_name": "Mars + NY Bae", "zone_type": "SHELF", "sku_zone": "MARS_NYBAE", "is_revenue_zone": true},
+        {"zone_id": "MENS", "zone_name": "Mens", "zone_type": "SHELF", "sku_zone": "MENS", "is_revenue_zone": true},
+        {"zone_id": "LOREAL", "zone_name": "L'Oreal", "zone_type": "SHELF", "sku_zone": "LOREAL", "is_revenue_zone": true},
+        {"zone_id": "BEAUTY", "zone_name": "Beauty", "zone_type": "SHELF", "sku_zone": "BEAUTY", "is_revenue_zone": true},
+        {"zone_id": "MAKEUP", "zone_name": "Makeup Unit", "zone_type": "SERVICE", "sku_zone": "MAKEUP", "is_revenue_zone": true},
+        {"zone_id": "ACCESSORIES", "zone_name": "Accessories", "zone_type": "SHELF", "sku_zone": "ACCESSORIES", "is_revenue_zone": true},
+        {"zone_id": "CASH_COUNTER", "zone_name": "Cash Counter", "zone_type": "BILLING", "sku_zone": "CASH_COUNTER", "is_revenue_zone": true},
+        {"zone_id": "BILLING_QUEUE", "zone_name": "Billing Queue", "zone_type": "BILLING", "sku_zone": "BILLING_QUEUE", "is_revenue_zone": true}
+      ],
+      "camera_zone_rois": {
+        "CAM_ENTRY_01": {
+          "ENTRANCE": {"x1": 0.0, "y1": 0.2, "x2": 1.0, "y2": 0.95},
+          "crossing_line": {"x1": 0.35, "y1": 0.0, "x2": 0.35, "y2": 1.0}
+        },
+        "CAM_ZONE_01": {
+          "SALM": {"x1": 0.0, "y1": 0.0, "x2": 0.2, "y2": 0.35},
+          "TFS": {"x1": 0.15, "y1": 0.0, "x2": 0.35, "y2": 0.35},
+          "MINIMALIST": {"x1": 0.3, "y1": 0.0, "x2": 0.5, "y2": 0.35},
+          "AQUALOGI": {"x1": 0.45, "y1": 0.0, "x2": 0.65, "y2": 0.35},
+          "FOXTALE": {"x1": 0.6, "y1": 0.0, "x2": 0.8, "y2": 0.35},
+          "JC": {"x1": 0.75, "y1": 0.0, "x2": 1.0, "y2": 0.35},
+          "FRAGRANCE": {"x1": 0.1, "y1": 0.35, "x2": 0.45, "y2": 0.7},
+          "NAIL": {"x1": 0.35, "y1": 0.35, "x2": 0.55, "y2": 0.7}
+        },
+        "CAM_ZONE_02": {
+          "FACE": {"x1": 0.0, "y1": 0.55, "x2": 0.25, "y2": 1.0},
+          "MARS_NYBAE": {"x1": 0.2, "y1": 0.55, "x2": 0.45, "y2": 1.0},
+          "MENS": {"x1": 0.4, "y1": 0.55, "x2": 0.6, "y2": 1.0},
+          "LOREAL": {"x1": 0.55, "y1": 0.55, "x2": 0.75, "y2": 1.0},
+          "BEAUTY": {"x1": 0.7, "y1": 0.55, "x2": 0.9, "y2": 1.0},
+          "MAKEUP": {"x1": 0.35, "y1": 0.2, "x2": 0.65, "y2": 0.55},
+          "ACCESSORIES": {"x1": 0.75, "y1": 0.2, "x2": 1.0, "y2": 0.55}
+        },
+        "CAM_BILLING_01": {
+          "CASH_COUNTER": {"x1": 0.25, "y1": 0.15, "x2": 0.75, "y2": 0.65},
+          "BILLING_QUEUE": {"x1": 0.1, "y1": 0.5, "x2": 0.9, "y2": 0.95}
+        }
+      }
+    },
+    {
+      "store_id": "STORE_2",
+      "name": "Store 2",
+      "layout_image": "store_2/Store 2/store 2 - layout.png",
+      "open_hours": {
+        "timezone": "Asia/Kolkata",
+        "start": "10:00",
+        "end": "22:00"
+      },
+      "cameras": [
+        {
+          "camera_id": "CAM_ENTRY_01",
+          "role": "entry",
+          "video_path": "store_2/Store 2/entry 1.mp4",
+          "zones_covered": ["ENTRANCE"]
+        },
+        {
+          "camera_id": "CAM_ENTRY_02",
+          "role": "entry",
+          "video_path": "store_2/Store 2/entry 2.mp4",
+          "zones_covered": ["ENTRANCE"]
+        },
+        {
+          "camera_id": "CAM_ZONE_01",
+          "role": "floor",
+          "video_path": "store_2/Store 2/zone.mp4",
+          "zones_covered": ["ZONE_01", "ZONE_02", "ZONE_03", "ZONE_04", "ZONE_05", "ZONE_06"]
+        },
+        {
+          "camera_id": "CAM_BILLING_01",
+          "role": "billing",
+          "video_path": "store_2/Store 2/billing_area.mp4",
+          "zones_covered": ["BILLING_CHECKOUT", "BILLING_QUEUE"]
+        }
+      ],
+      "zones": [
+        {"zone_id": "ENTRANCE", "zone_name": "Entrance", "zone_type": "ENTRY", "sku_zone": "ENTRANCE", "is_revenue_zone": false},
+        {"zone_id": "ZONE_01", "zone_name": "Zone 01", "zone_type": "SHELF", "sku_zone": "ZONE_01", "is_revenue_zone": true},
+        {"zone_id": "ZONE_02", "zone_name": "Zone 02", "zone_type": "SHELF", "sku_zone": "ZONE_02", "is_revenue_zone": true},
+        {"zone_id": "ZONE_03", "zone_name": "Zone 03", "zone_type": "SHELF", "sku_zone": "ZONE_03", "is_revenue_zone": true},
+        {"zone_id": "ZONE_04", "zone_name": "Zone 04", "zone_type": "SHELF", "sku_zone": "ZONE_04", "is_revenue_zone": true},
+        {"zone_id": "ZONE_05", "zone_name": "Zone 05", "zone_type": "SHELF", "sku_zone": "ZONE_05", "is_revenue_zone": true},
+        {"zone_id": "ZONE_06", "zone_name": "Zone 06", "zone_type": "SHELF", "sku_zone": "ZONE_06", "is_revenue_zone": true},
+        {"zone_id": "BILLING_CHECKOUT", "zone_name": "Billing checkout", "zone_type": "BILLING", "sku_zone": "BILLING_CHECKOUT", "is_revenue_zone": true},
+        {"zone_id": "BILLING_QUEUE", "zone_name": "Billing queue", "zone_type": "BILLING", "sku_zone": "BILLING_QUEUE", "is_revenue_zone": true}
+      ],
+      "camera_zone_rois": {
+        "CAM_ENTRY_01": {
+          "ENTRANCE": {"x1": 0.0, "y1": 0.3, "x2": 1.0, "y2": 1.0},
+          "crossing_line": {"x1": 0.5, "y1": 0.0, "x2": 0.5, "y2": 1.0}
+        },
+        "CAM_ENTRY_02": {
+          "ENTRANCE": {"x1": 0.0, "y1": 0.25, "x2": 1.0, "y2": 0.9},
+          "crossing_line": {"x1": 0.45, "y1": 0.0, "x2": 0.45, "y2": 1.0}
+        },
+        "CAM_ZONE_01": {
+          "ZONE_01": {"x1": 0.0, "y1": 0.1, "x2": 0.25, "y2": 0.9},
+          "ZONE_02": {"x1": 0.2, "y1": 0.25, "x2": 0.45, "y2": 0.65},
+          "ZONE_03": {"x1": 0.35, "y1": 0.3, "x2": 0.55, "y2": 0.7},
+          "ZONE_04": {"x1": 0.5, "y1": 0.0, "x2": 0.85, "y2": 0.4},
+          "ZONE_05": {"x1": 0.65, "y1": 0.35, "x2": 0.95, "y2": 0.75},
+          "ZONE_06": {"x1": 0.8, "y1": 0.5, "x2": 1.0, "y2": 1.0}
+        },
+        "CAM_BILLING_01": {
+          "BILLING_CHECKOUT": {"x1": 0.3, "y1": 0.1, "x2": 0.7, "y2": 0.55},
+          "BILLING_QUEUE": {"x1": 0.05, "y1": 0.45, "x2": 0.95, "y2": 0.95}
+        }
+      }
+    }
+  ]
+}

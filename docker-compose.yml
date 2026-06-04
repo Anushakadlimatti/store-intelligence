@@ -1,0 +1,20 @@
+services:
+  api:
+    build: .
+    ports:
+      - "${PORT:-8080}:${PORT:-8080}"
+    volumes:
+      - ./data:/app/data
+      - ./store_1:/app/store_1:ro
+      - ./store_2:/app/store_2:ro
+      - "./POS - sample transactionsb1e826f.csv:/app/POS - sample transactionsb1e826f.csv:ro"
+      - ./store_layout.json:/app/store_layout.json:ro
+    environment:
+      - DATABASE_URL=sqlite:////app/data/store_intelligence.db
+      - PYTHONPATH=/app
+      - PORT=${PORT:-8080}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os,urllib.request; urllib.request.urlopen('http://127.0.0.1:%s/health'%os.environ.get('PORT','8080'))"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
