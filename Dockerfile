@@ -2,12 +2,17 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgl1 libglib2.0-0 \
-    && rm -rf /var/lib/apt/lists/*
+# Optional: MJPEG from mounted CCTV clips (local docker compose). Cloud deploy leaves this false.
+ARG WITH_OPENCV=false
+RUN if [ "$WITH_OPENCV" = "true" ]; then \
+    apt-get update && apt-get install -y --no-install-recommends \
+        libgl1 libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip install --no-cache-dir "opencv-python-headless>=4.9.0"; \
+    fi
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements-api.txt .
+RUN pip install --no-cache-dir -r requirements-api.txt
 
 COPY . .
 

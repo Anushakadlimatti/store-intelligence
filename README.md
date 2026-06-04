@@ -6,7 +6,7 @@ Offline retail analytics: CCTV → YOLOv8 detection → PDF-schema events → RE
 
 | Requirement | Implementation |
 |-------------|----------------|
-| **Containerised** | `docker compose up --build` — API + SQLite volume, no manual DB setup |
+| **Containerised** | Slim API image + `docker compose up --build` (local: optional CCTV mounts + OpenCV) |
 | **Structured logging** | JSON per request: `trace_id`, `store_id`, `endpoint`, `latency_ms`, `event_count` (ingest), `status_code` |
 | **Idempotency** | `POST /events/ingest` dedupes by `event_id` — see `tests/test_metrics.py` |
 | **Graceful degradation** | DB down → HTTP **503** `{"error":"service_unavailable",...}` — no stack traces in responses |
@@ -20,10 +20,10 @@ Offline retail analytics: CCTV → YOLOv8 detection → PDF-schema events → RE
 After `git clone`:
 
 ```bash
-cd store-intelligence2
+cd store-intelligence
 python -m venv .venv
 source .venv/bin/activate          # Windows: .\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+pip install -r requirements.txt   # API + ML pipeline + tests (see requirements-*.txt)
 docker compose up --build
 ```
 
@@ -55,7 +55,7 @@ bash pipeline/run.sh store2 --fast
 
 # Or step by step
 python -m pipeline.detect --store STORE_2 --output output/store2_events.jsonl --fast
-python -m pipeline.reload_store2
+python -m pipeline.feed_live --input output/store2_events.jsonl --store STORE_2 --reset
 ```
 
 Or ingest directly while detecting:
@@ -64,10 +64,14 @@ Or ingest directly while detecting:
 python -m pipeline.detect --store STORE_2 --api-url http://127.0.0.1:8080
 ```
 
-### 2. Bulk reload into API (SQLite)
+### 2. Load JSONL into the API (local or remote)
 
 ```bash
-bash pipeline/run.sh reload
+# Local API (default http://127.0.0.1:8080)
+python -m pipeline.feed_live --input output/store2_events.jsonl --store STORE_2 --reset
+
+# Or via run.sh
+bash pipeline/run.sh feed --input output/store2_events.jsonl --store STORE_2 --reset
 ```
 
 ### 3. Live pipeline (detection + API connected, STORE_2)
@@ -98,6 +102,24 @@ python -m pipeline.feed_live --input output/store2_events.jsonl --store STORE_2 
 ```
 
 Use this when you already ran detection and only want to replay events into the API.
+
+**Cloud demo:** replay committed seed data after deploy (see [Deploy](#deploy-cloud-demo)):
+
+```bash
+python -m pipeline.feed_live --input seed/store2_events.jsonl --store STORE_2 \
+  --api-url https://YOUR-SERVICE.onrender.com --reset --interval 0.05
+```
+
+---
+
+## Dependencies
+
+| File | Used for |
+|------|----------|
+| `requirements.txt` | Full local dev (`-r` api + ml + dev) |
+| `requirements-api.txt` | Production Docker image (FastAPI only, ~hundreds of MB) |
+| `requirements-ml.txt` | YOLO/OpenCV on the **host** for `pipeline/detect.py` |
+| `requirements-dev.txt` | `pytest` / coverage (local & CI) |
 
 ---
 
@@ -173,8 +195,7 @@ pipeline/
   emit.py              # PDF event schema + emission
   run.sh               # One command: detect / live / feed / reload / store2
   live_detect.py       # Live detect + API ingest
-  feed_live.py         # Replay JSONL to API
-  reload_store2.py     # Load JSONL into DB
+  feed_live.py         # Replay JSONL to API (local or --api-url cloud)
   layout.py, staff.py, stream.py, visitor_pool.py
 app/
   main.py              # FastAPI entrypoint
@@ -188,22 +209,67 @@ docs/
   DESIGN.md, CHOICES.md, API.md
 dashboard/static/      # Live web UI
 store_layout.json      # Zones, cameras, ROIs
-store_1/, store_2/     # CCTV clips
+store_1/, store_2/     # CCTV clips (excluded from image; mounted in compose)
+seed/                  # store2_events.jsonl for cloud demo ingest
+requirements-api.txt   # Slim production image deps
 docker-compose.yml
+Dockerfile
 README.md
 ```
 
-## Deploy (public demo URL)
+## Deploy (cloud demo)
 
-Deploy to **[Render](https://render.com)** (free tier, Docker):
+The production **`Dockerfile`** builds a **slim API-only image** (no PyTorch/YOLO, no CCTV files). Detection stays on your laptop; the cloud service serves metrics/dashboard from ingested events.
 
-1. Push this repo to GitHub (include `seed/store2_events.jsonl` — committed for cloud demo data).
-2. Render → **New** → **Blueprint** (or Web Service) → connect the repo.
-3. Render detects `render.yaml` and builds the `Dockerfile`. First boot auto-loads **STORE_2** from `seed/`.
-4. Open: `https://<your-service>.onrender.com/dashboard?store=STORE_2`  
-   Health: `https://<your-service>.onrender.com/health`
+### Option A — Docker image (works with a **private** repo)
 
-Free tier may sleep after ~15 min idle; first visit can take 30–60s to wake. CCTV MJPEG streams need local `store_2/` video files; metrics/funnel/heatmap work on Render without videos.
+No GitHub connection required on Render.
+
+**1. Build and push** (CCTV folders are excluded via `.dockerignore`):
+
+```bash
+docker build -t store-intelligence:latest .
+docker tag store-intelligence:latest YOUR_DOCKERHUB_USER/store-intelligence:latest
+docker login
+docker push YOUR_DOCKERHUB_USER/store-intelligence:latest
+```
+
+**2. [Render](https://render.com)** → **New** → **Web Service** → **Deploy an existing image from a registry**
+
+| Setting | Value |
+|---------|--------|
+| Image | `docker.io/YOUR_DOCKERHUB_USER/store-intelligence:latest` |
+| Health check path | `/health` |
+| Environment variables | **Leave empty** (defaults are in the image; Render sets `PORT`) |
+| Disk (recommended) | Mount **`/app/data`** (1 GB) so SQLite survives redeploys |
+
+**3. Open dashboard** (default store in UI is `STORE_1`; demo data is **`STORE_2`**):
+
+`https://<your-service>.onrender.com/dashboard?store=STORE_2`
+
+**4. Seed demo data** (DB starts empty). From your machine with the repo cloned:
+
+```bash
+export PYTHONPATH=.   # Windows: $env:PYTHONPATH="."
+python -m pipeline.feed_live --input seed/store2_events.jsonl --store STORE_2 \
+  --api-url https://<your-service>.onrender.com --reset --interval 0.05
+```
+
+Refresh the dashboard — visitors, funnel, and zones should populate. **Conversion may stay 0%** for STORE_2 (no POS rows in seed).
+
+Free tier may **sleep** after ~15 min idle; wake with `/health` first (30–60s). **Live CCTV MJPEG** is not available in the cloud image (no videos, no OpenCV in slim build); use **metrics-only** view on the dashboard.
+
+### Option B — GitHub → Render
+
+Connect a **private** repo: GitHub → **Settings** → **Applications** → **Render** → grant access to the repository. Then create a Web Service from the repo; Render builds the same `Dockerfile`. You still need step **4** (`feed_live`) unless you add your own startup seed.
+
+### Local Docker vs cloud image
+
+| | `docker compose` | Cloud image (`docker build`) |
+|--|------------------|------------------------------|
+| OpenCV / MJPEG | Yes (`WITH_OPENCV=true`) | No (API-only) |
+| CCTV videos | Mounted from `store_1/`, `store_2/` | Not in image |
+| ML / YOLO | Install on host (`requirements-ml.txt`) | Not in image |
 
 ---
 

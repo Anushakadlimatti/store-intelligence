@@ -13,3 +13,11 @@ output
 *.md
 !README.md
 terminals
+
+store_1/
+store_2/
+*.mp4
+*.avi
+*.mkv
+*.mov
+*.webm

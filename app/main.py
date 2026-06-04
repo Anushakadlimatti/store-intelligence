@@ -319,8 +319,17 @@ async def dashboard():
 
 @app.get("/dashboard/stream/{store_id}/{camera_id}")
 async def stream_camera(store_id: str, camera_id: str):
-    """MJPEG stream from CCTV clip (looped)."""
-    from pipeline.stream import generate_mjpeg_stream
+    """MJPEG stream from CCTV clip (looped). Requires opencv in the image + video files on disk."""
+    try:
+        from pipeline.stream import generate_mjpeg_stream
+    except ImportError:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "error": "streams_unavailable",
+                "message": "CCTV streaming is not enabled in this API-only image.",
+            },
+        )
 
     return StreamingResponse(
         iterate_in_threadpool(generate_mjpeg_stream(store_id, camera_id)),

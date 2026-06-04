@@ -1,6 +1,6 @@
 CHOICES.md
 
-Three design decisions for the Store Intelligence take-home: what was considered, what AI suggested, and what was implemented.
+Four design decisions for the Store Intelligence take-home: what was considered, what AI suggested, and what was implemented.
 
 
 1. Detection model: YOLOv8n (not a VLM)
@@ -104,6 +104,34 @@ Why
   Matches clone, docker compose up, works with no Redis or Postgres setup.
   Clear path to Postgres: change DATABASE_URL, keep same SQLAlchemy models.
   Operators can grep JSON logs by trace_id without distributed tracing in v1.
+
+
+4. Production Docker image: API-only split
+
+Options considered
+
+  Single requirements.txt in Docker - includes ultralytics/PyTorch/OpenCV; image can exceed 9 GB with ML stack and CCTV copies.
+  Multi-stage copy of app/ only - smaller but still pulls ML if requirements unchanged.
+  Split requirements-api.txt vs requirements-ml.txt - API image slim; ML on host for detection.
+
+What AI suggested
+
+  One Dockerfile with full pip install -r requirements.txt for simplicity.
+
+What I chose
+
+  requirements-api.txt for the production Dockerfile (FastAPI, SQLAlchemy, uvicorn only).
+  requirements-ml.txt for local pip install when running pipeline/detect.py.
+  requirements-dev.txt for pytest; not installed in the cloud image.
+  .dockerignore for store_1/, store_2/, and *.mp4 so footage is never COPY'd into the image.
+  docker-compose build arg WITH_OPENCV=true for local MJPEG only; cloud deploy leaves it false.
+  POST /dashboard/stream/... returns 503 in API-only images (streams_unavailable).
+
+Why
+
+  Cloud hosts (Render free tier) need a small pull and fast cold start; detection does not run in the API container.
+  docker compose on a laptop still mounts CCTV and can enable OpenCV for MJPEG without shipping YOLO to production.
+  Demo data is loaded explicitly via feed_live against seed/store2_events.jsonl (or detect on host), not auto-baked into SQLite on boot.
 
 
 Store ID mapping

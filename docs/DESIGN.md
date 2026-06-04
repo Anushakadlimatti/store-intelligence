@@ -47,11 +47,20 @@ Dashboard
   /dashboard?store=STORE_2 polls GET /stores/{id}/live about every 800ms
   Three area cards (entrance, main floor, billing) plus zone detail table
   CCTV MJPEG on demand so API stays responsive
-  pipeline/feed_live.py replays JSONL for demos; pipeline/reload_store2.py bulk-loads after detect
+  pipeline/feed_live.py replays JSONL into the API (local or remote URL via --api-url); used for cloud demo seeding
 
 Docker
 
-  docker compose up --build starts the API on port 8080, mounts data/, read-only video folders, and sample POS CSV. No manual DB migration.
+  Production Dockerfile installs requirements-api.txt only (FastAPI + SQLite, no YOLO/PyTorch).
+  .dockerignore excludes store_1/, store_2/, and video files so images stay small (~hundreds of MB vs multi-GB with ML deps + footage).
+  docker compose up --build passes WITH_OPENCV=true for optional MJPEG when CCTV folders are mounted.
+  Compose mounts data/, read-only store_1/ and store_2/, and sample POS CSV. No manual DB migration.
+  Cloud deploy: push image to a registry (e.g. Docker Hub), run on Render with optional disk at /app/data; ingest seed/store2_events.jsonl via feed_live after boot (DB is empty on first start).
+
+Deployment topology
+
+  Host (dev): YOLO detection, CCTV files, feed_live or detect --api-url pointing at local or cloud API
+  Cloud (demo): slim container, SQLite on persistent volume, dashboard + REST; no CCTV in image; metrics from ingested events only
 
 AI-Assisted Decisions
 

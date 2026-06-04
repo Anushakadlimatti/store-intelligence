@@ -1,6 +1,9 @@
 services:
   api:
-    build: .
+    build:
+      context: .
+      args:
+        WITH_OPENCV: "true"
     ports:
       - "${PORT:-8080}:${PORT:-8080}"
     volumes:

@@ -56,7 +56,7 @@ def main():
             r = client.post(f"{base}/admin/reset-live/{args.store}")
             print("Reset:", r.json())
 
-        print(f"Feeding {len(events)} events every {args.interval}s → {base}")
+        print(f"Feeding {len(events)} events every {args.interval}s -> {base}")
         print("Open dashboard:", f"{base}/dashboard?store={args.store}")
         for i, ev in enumerate(events, 1):
             r = client.post(f"{base}/events/ingest", json={"events": [ev]})
